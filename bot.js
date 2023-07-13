@@ -16,7 +16,7 @@ client.once('ready', () => {
 });
 
 
-const MEDIA_CHANNEL_ID = "1086959321792925766";
+const MEDIA_CHANNEL_ID = process.env.MEDIA_CHANNEL_ID;
 const gifMap = new Map();
 
 client.on('messageCreate', message => {
