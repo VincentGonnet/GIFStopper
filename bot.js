@@ -15,8 +15,13 @@ client.once('ready', () => {
     console.log("Bot started.");
 });
 
-
+// CHANGE THOSE VALUES
 const MEDIA_CHANNEL_ID = process.env.MEDIA_CHANNEL_ID;
+const GIF_LIMIT = 3;
+const GIF_TIME_LIMIT = 90; // In seconds
+const WARNING_TITLE = "Tu envoies trop de gifs !";
+const WARNING_MESSAGE = "Merci de ne pas spammer les gifs.\nTu peux les envoyer dans le salon <#" + MEDIA_CHANNEL_ID + "> à la place.";
+
 const gifMap = new Map();
 
 client.on('messageCreate', message => {
@@ -24,13 +29,13 @@ client.on('messageCreate', message => {
 
     if (message.channel.id != MEDIA_CHANNEL_ID && (message.content.startsWith("https://tenor.com/view/") || (message.content.includes("giphy.com") && message.content.includes("media")))) {
 
-        if (gifMap.has(message.author.id) && gifMap.get(message.author.id) >= 3) {
+        // If the user has sent more than X gifs in the last Y seconds, delete the message and send them a warning.
+        if (gifMap.has(message.author.id) && gifMap.get(message.author.id) >= GIF_LIMIT) {
             message.delete();
-            // Build embed
             const embed = new Discord.EmbedBuilder()
                 .setColor('#eb4034')
-                .setTitle('Tu envoies trop de gifs !')
-                .setDescription(`Merci de ne pas spammer les gifs dans le général.\nTu peux les envoyer dans le salon <#${MEDIA_CHANNEL_ID}> à la place.`)
+                .setTitle(WARNING_TITLE)
+                .setDescription(WARNING_MESSAGE)
 
             message.author.send({ embeds: [embed] });
             return;
@@ -44,7 +49,7 @@ client.on('messageCreate', message => {
         }
 
         console.log("Incremented " + message.author.username + "'s counter to " + (gifMap.get(message.author.id)));
-        setTimeout(decrementCounter, 10000, message.author);
+        setTimeout(decrementCounter, GIF_TIME_LIMIT * 1000, message.author);
     }
 });
 
